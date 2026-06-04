@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MESH — DIY Show Board</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600&display=swap');
+
+  :root {
+    --ink: #0a0a0a;
+    --paper: #f0ebe0;
+    --paper2: #e8e2d0;
+    --red: #c0140a;
+    --red2: #8a0e06;
+    --yellow: #e8c832;
+    --border: #1a1a1a;
+    --muted: #5a5040;
+    --tag-bg: #1a1a1a;
+    --tag-txt: #f0ebe0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* NOISE TEXTURE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+
+  /* HEADER */
+  header {
+    position: relative;
+    z-index: 10;
+    border-bottom: 3px solid var(--border);
+    padding: 0;
+    background: var(--ink);
+    overflow: hidden;
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .logo-block {
+    background: var(--red);
+    padding: 18px 28px;
+    border-right: 3px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .logo-block h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    color: var(--paper);
+    letter-spacing: 6px;
+    line-height: 1;
+    text-shadow: 3px 3px 0 var(--red2);
+  }
+
+  .logo-block .tagline {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: rgba(240,235,224,0.7);
+    letter-spacing: 2px;
+    margin-top: 4px;
+    text-transform: uppercase;
+  }
+
+  .header-info {
+    padding: 18px 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .header-info p {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: rgba(240,235,224,0.6);
+    letter-spacing: 1px;
+  }
+
+  .header-info p span {
+    color: var(--yellow);
+  }
+
+  .header-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    border-left: 2px solid #333;
+  }
+
+  .hbtn {
+    background: none;
+    border: none;
+    border-right: 2px solid #333;
+    color: var(--paper);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    padding: 0 20px;
+    height: 100%;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background 0.1s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .hbtn:hover { background: #222; }
+  .hbtn.red { background: var(--red); }
+  .hbtn.red:hover { background: var(--red2); }
+
+  /* TICKER */
+  .ticker {
+    background: var(--yellow);
+    border-bottom: 2px solid var(--border);
+    padding: 6px 0;
+    overflow: hidden;
+    position: relative;
+    z-index: 9;
+  }
+
+  .ticker-inner {
+    display: flex;
+    animation: scroll-left 30s linear infinite;
+    white-space: nowrap;
+    gap: 60px;
+  }
+
+  .ticker-inner span {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+
+  @keyframes scroll-left {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* LAYOUT */
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px 20px;
+  }
+
+  /* TOOLBAR */
+  .toolbar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .toolbar select, .toolbar input[type="text"] {
+    background: var(--paper);
+    border: 2px solid var(--border);
+    color: var(--ink);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    padding: 8px 12px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .toolbar select:focus, .toolbar input[type="text"]:focus {
+    border-color: var(--red);
+  }
+
+  .filter-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    align-self: center;
+  }
+
+  .count-badge {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 4px 10px;
+    margin-left: auto;
+  }
+
+  /* SHOW GRID */
+  .show-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 0;
+    border: 2px solid var(--border);
+  }
+
+  .show-card {
+    border: 1px solid var(--border);
+    padding: 0;
+    background: var(--paper);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.1s;
+    cursor: pointer;
+  }
+
+  .show-card:hover { transform: translate(-1px, -1px); background: #fff; }
+
+  .show-card-stripe {
+    height: 5px;
+    background: var(--red);
+  }
+
+  .show-card-stripe.hardcore { background: #1a1a1a; }
+  .show-card-stripe.metal { background: #444; }
+  .show-card-stripe.punk { background: var(--red); }
+  .show-card-stripe.noise { background: #6b4c8a; }
+  .show-card-stripe.other { background: #1a6b3a; }
+
+  .show-card-body {
+    padding: 14px 16px;
+  }
+
+  .show-date-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .show-date {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--ink);
+    line-height: 1;
+  }
+
+  .show-day-time {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .show-day {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .show-time {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .show-bands {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 1px;
+    color: var(--ink);
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+
+  .show-venue {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .show-venue span {
+    color: var(--ink);
+    font-weight: bold;
+  }
+
+  .show-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+
+  .tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background: var(--tag-bg);
+    color: var(--tag-txt);
+    padding: 3px 7px;
+  }
+
+  .tag.punk { background: var(--red); }
+  .tag.hardcore { background: #1a1a1a; }
+  .tag.metal { background: #333; }
+  .tag.noise { background: #6b4c8a; }
+  .tag.diy { background: transparent; border: 1px solid var(--border); color: var(--ink); }
+
+  .show-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px dashed #ccc;
+    padding-top: 10px;
+  }
+
+  .show-cost {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    color: var(--red);
+  }
+
+  .show-city {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .show-share-btn {
+    background: var(--ink);
+    border: none;
+    color: var(--paper);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 4px 8px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background 0.1s;
+  }
+
+  .show-share-btn:hover { background: var(--red); }
+
+  /* EMPTY STATE */
+  .empty-state {
+    grid-column: 1 / -1;
+    padding: 60px 20px;
+    text-align: center;
+  }
+
+  .empty-state p {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    color: var(--muted);
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+  }
+
+  .empty-state small {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(10,10,10,0.88);
+    z-index: 100;
+    overflow-y: auto;
+    padding: 30px 20px;
+  }
+
+  .modal-overlay.open { display: flex; align-items: flex-start; justify-content: center; }
+
+  .modal {
+    background: var(--paper);
+    border: 3px solid var(--border);
+    width: 100%;
+    max-width: 560px;
+    position: relative;
+    animation: modal-in 0.12s ease-out;
+  }
+
+  @keyframes modal-in {
+    from { transform: translateY(10px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .modal-header {
+    background: var(--ink);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal-header h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 3px;
+    color: var(--paper);
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    color: var(--paper);
+    font-size: 22px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 4px;
+  }
+
+  .modal-body { padding: 24px; }
+
+  .form-row { margin-bottom: 16px; }
+
+  .form-row label {
+    display: block;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 5px;
+  }
+
+  .form-row input,
+  .form-row textarea,
+  .form-row select {
+    width: 100%;
+    background: var(--paper);
+    border: 2px solid var(--border);
+    color: var(--ink);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    padding: 9px 12px;
+    outline: none;
+    resize: vertical;
+  }
+
+  .form-row input:focus,
+  .form-row textarea:focus,
+  .form-row select:focus { border-color: var(--red); }
+
+  .form-row .hint {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    margin-top: 4px;
+  }
+
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .btn {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    letter-spacing: 2px;
+    border: 2px solid var(--border);
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all 0.1s;
+  }
+
+  .btn-primary { background: var(--red); color: var(--paper); border-color: var(--red2); }
+  .btn-primary:hover { background: var(--red2); }
+  .btn-secondary { background: transparent; color: var(--ink); }
+  .btn-secondary:hover { background: var(--paper2); }
+
+  .modal-footer {
+    border-top: 2px solid var(--border);
+    padding: 14px 24px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+
+  /* IMPORT MODAL */
+  .import-area {
+    width: 100%;
+    background: var(--paper);
+    border: 2px dashed var(--border);
+    color: var(--ink);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    padding: 12px;
+    outline: none;
+    resize: vertical;
+    min-height: 100px;
+  }
+
+  .import-area:focus { border-color: var(--red); border-style: solid; }
+
+  /* DETAIL MODAL */
+  .detail-bands {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    letter-spacing: 2px;
+    line-height: 1.1;
+    margin-bottom: 10px;
+  }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 16px 0;
+  }
+
+  .detail-field label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .detail-field span {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .share-code-box {
+    background: var(--ink);
+    color: var(--yellow);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    padding: 12px;
+    word-break: break-all;
+    margin-top: 12px;
+    border: 2px solid var(--border);
+    position: relative;
+  }
+
+  .copy-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: var(--red);
+    border: none;
+    color: var(--paper);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 3px 8px;
+    cursor: pointer;
+    text-transform: uppercase;
+  }
+
+  .copy-btn:hover { background: var(--red2); }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--ink);
+    color: var(--yellow);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    padding: 10px 18px;
+    z-index: 999;
+    border: 2px solid var(--red);
+    transform: translateY(80px);
+    transition: transform 0.2s;
+    pointer-events: none;
+    text-transform: uppercase;
+  }
+
+  .toast.show { transform: translateY(0); }
+
+  /* SECTION TITLE */
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+  .section-title h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px;
+    letter-spacing: 4px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+    opacity: 0.2;
+  }
+
+  /* ABOUT SECTION */
+  .about-bar {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 20px 24px;
+    margin-top: 40px;
+    border-top: 3px solid var(--red);
+  }
+
+  .about-bar h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+    color: var(--yellow);
+  }
+
+  .about-bar p {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    line-height: 1.8;
+    color: rgba(240,235,224,0.65);
+    max-width: 680px;
+  }
+
+  .about-bar p strong { color: var(--paper); font-weight: 600; }
+
+  @media (max-width: 600px) {
+    .logo-block h1 { font-size: 36px; }
+    .header-actions .hbtn span { display: none; }
+    .form-grid { grid-template-columns: 1fr; }
+    .detail-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="logo-block">
+      <h1>DIY MESH</h1>
+      <div class="tagline">DIY Show Network // No Ads // No Industry</div>
+    </div>
+    <div class="header-info">
+      <p>PEER-TO-PEER SHOW LISTINGS // <span>PUNK / HARDCORE / METAL / NOISE</span></p>
+      <p>COPY & SHARE SHOW CODES WITH YOUR CREW — NO SERVER NEEDED</p>
+    </div>
+    <div class="header-actions">
+      <button class="hbtn" onclick="openImport()">&#x2197; <span>Import Code</span></button>
+      <button class="hbtn red" onclick="openAddShow()">+ <span>Post Show</span></button>
+    </div>
+  </div>
+</header>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner" id="ticker-inner">
+    <span>★ NO TICKETMASTER ★ NO LIVENATION ★ NO CORPORATE SPONSORS ★ SUPPORT LOCAL VENUES ★ CASH AT THE DOOR ★ ALL AGES WHEN POSSIBLE ★ MOSH RESPONSIBLY ★ LOOK OUT FOR EACH OTHER ★</span>
+    <span>★ NO TICKETMASTER ★ NO LIVENATION ★ NO CORPORATE SPONSORS ★ SUPPORT LOCAL VENUES ★ CASH AT THE DOOR ★ ALL AGES WHEN POSSIBLE ★ MOSH RESPONSIBLY ★ LOOK OUT FOR EACH OTHER ★</span>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="container">
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <span class="filter-label">Filter:</span>
+    <input type="text" id="search-input" placeholder="band / venue / city..." style="width:200px;" oninput="renderShows()">
+    <select id="genre-filter" onchange="renderShows()">
+      <option value="">All Genres</option>
+      <option value="punk">Punk</option>
+      <option value="hardcore">Hardcore</option>
+      <option value="metal">Metal</option>
+      <option value="noise">Noise</option>
+      <option value="other">Other</option>
+    </select>
+    <select id="city-filter" onchange="renderShows()">
+      <option value="">All Cities</option>
+    </select>
+    <select id="sort-filter" onchange="renderShows()">
+      <option value="date">Sort: Date</option>
+      <option value="added">Sort: Recently Added</option>
+    </select>
+    <span class="count-badge" id="show-count">0 shows</span>
+  </div>
+
+  <!-- SHOWS -->
+  <div class="section-title"><h2>Upcoming Shows</h2></div>
+  <div class="show-grid" id="show-grid"></div>
+
+  <!-- ABOUT -->
+  <div class="about-bar">
+    <h3>How Mesh Works</h3>
+    <p>
+      <strong>Post a show</strong> → it saves to your browser locally. Click <strong>"Share Code"</strong> on any show to get a short text code. 
+      Send that code to friends in other cities via text, email, Signal, whatever. 
+      They open their copy of this file, hit <strong>"Import Code"</strong>, paste it in — show appears instantly.
+      <br><br>
+      <strong>No server. No account. No tracking. No algorithms. No ads. No data sold.</strong>
+      This file is the network. Pass it around like a zine.
+    </p>
+  </div>
+
+</div>
+
+<!-- ADD SHOW MODAL -->
+<div class="modal-overlay" id="add-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Post A Show</h2>
+      <button class="modal-close" onclick="closeModal('add-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <label>Bands / Artists *</label>
+        <input type="text" id="f-bands" placeholder="The Wipers / Ceremony / Weekend Nachos">
+        <div class="hint">Separate with / or line breaks</div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>Date *</label>
+          <input type="date" id="f-date">
+        </div>
+        <div class="form-row">
+          <label>Doors / Start Time</label>
+          <input type="text" id="f-time" placeholder="8pm doors / 9pm">
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Venue *</label>
+        <input type="text" id="f-venue" placeholder="Venue name or 'House show - DM for address'">
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>City *</label>
+          <input type="text" id="f-city" placeholder="Cleveland, OH">
+        </div>
+        <div class="form-row">
+          <label>Cost</label>
+          <input type="text" id="f-cost" placeholder="$5 / Donation / Free">
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>Genre</label>
+          <select id="f-genre">
+            <option value="punk">Punk</option>
+            <option value="hardcore">Hardcore</option>
+            <option value="metal">Metal</option>
+            <option value="noise">Noise</option>
+            <option value="other">Other Underground</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Ages</label>
+          <select id="f-ages">
+            <option value="All Ages">All Ages</option>
+            <option value="18+">18+</option>
+            <option value="21+">21+</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Notes / Contact</label>
+        <textarea id="f-notes" rows="3" placeholder="BYOB / Safe space show / Benefit for... / Contact: @handle"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('add-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveShow()">Post Show</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORT MODAL -->
+<div class="modal-overlay" id="import-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Import Show Code</h2>
+      <button class="modal-close" onclick="closeModal('import-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <label>Paste Show Code from a friend</label>
+        <textarea class="import-area" id="import-code" rows="6" placeholder="Paste the MESH:// code here..."></textarea>
+        <div class="hint">Your friend can generate this by clicking "Share" on any show listing</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('import-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="importShow()">Import</button>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="detail-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="d-title">Show Details</h2>
+      <button class="modal-close" onclick="closeModal('detail-modal')">✕</button>
+    </div>
+    <div class="modal-body" id="detail-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="d-delete-btn">Delete</button>
+      <button class="btn btn-primary" id="d-share-btn">Share Code</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const STORAGE_KEY = 'mesh_shows_v1';
+
+function getShows() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+  catch { return []; }
+}
+
+function saveShows(shows) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(shows));
+}
+
+function genId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+
+function toast(msg, dur = 2200) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), dur);
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr + 'T12:00:00');
+  return {
+    day: d.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase(),
+    date: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase(),
+    full: d.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+  };
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function openAddShow() {
+  document.getElementById('f-bands').value = '';
+  document.getElementById('f-date').value = '';
+  document.getElementById('f-time').value = '';
+  document.getElementById('f-venue').value = '';
+  document.getElementById('f-city').value = '';
+  document.getElementById('f-cost').value = '';
+  document.getElementById('f-notes').value = '';
+  openModal('add-modal');
+}
+
+function openImport() {
+  document.getElementById('import-code').value = '';
+  openModal('import-modal');
+}
+
+function saveShow() {
+  const bands = document.getElementById('f-bands').value.trim();
+  const date = document.getElementById('f-date').value;
+  const venue = document.getElementById('f-venue').value.trim();
+  const city = document.getElementById('f-city').value.trim();
+
+  if (!bands || !date || !venue || !city) {
+    toast('Fill in bands, date, venue & city');
+    return;
+  }
+
+  const show = {
+    id: genId(),
+    bands,
+    date,
+    time: document.getElementById('f-time').value.trim(),
+    venue,
+    city,
+    cost: document.getElementById('f-cost').value.trim() || 'TBA',
+    genre: document.getElementById('f-genre').value,
+    ages: document.getElementById('f-ages').value,
+    notes: document.getElementById('f-notes').value.trim(),
+    addedAt: Date.now()
+  };
+
+  const shows = getShows();
+  shows.push(show);
+  saveShows(shows);
+  closeModal('add-modal');
+  renderShows();
+  toast('Show posted!');
+}
+
+function encodeShow(show) {
+  const data = JSON.stringify(show);
+  return 'MESH://' + btoa(unescape(encodeURIComponent(data)));
+}
+
+function decodeShow(code) {
+  const raw = code.trim().replace(/^MESH:\/\//, '');
+  const data = decodeURIComponent(escape(atob(raw)));
+  return JSON.parse(data);
+}
+
+function importShow() {
+  const raw = document.getElementById('import-code').value.trim();
+  if (!raw) { toast('Paste a code first'); return; }
+
+  try {
+    const show = decodeShow(raw);
+    const shows = getShows();
+    if (shows.find(s => s.id === show.id)) {
+      toast('Already have this show');
+      closeModal('import-modal');
+      return;
+    }
+    show.addedAt = Date.now();
+    shows.push(show);
+    saveShows(shows);
+    closeModal('import-modal');
+    renderShows();
+    toast('Show imported: ' + show.bands.split('/')[0].trim());
+  } catch {
+    toast('Bad code — get a fresh one from your friend');
+  }
+}
+
+function openDetail(id) {
+  const shows = getShows();
+  const show = shows.find(s => s.id === id);
+  if (!show) return;
+
+  const df = formatDate(show.date);
+  const code = encodeShow(show);
+
+  document.getElementById('d-title').textContent = df.date;
+  document.getElementById('detail-body').innerHTML = `
+    <div class="detail-bands">${esc(show.bands)}</div>
+    <div class="show-tags">
+      <span class="tag ${show.genre}">${show.genre}</span>
+      <span class="tag diy">DIY</span>
+      <span class="tag">${esc(show.ages)}</span>
+    </div>
+    <div class="detail-grid">
+      <div class="detail-field"><label>Date</label><span>${esc(df.full)}</span></div>
+      <div class="detail-field"><label>Time</label><span>${esc(show.time || 'TBA')}</span></div>
+      <div class="detail-field"><label>Venue</label><span>${esc(show.venue)}</span></div>
+      <div class="detail-field"><label>City</label><span>${esc(show.city)}</span></div>
+      <div class="detail-field"><label>Cost</label><span style="color:var(--red)">${esc(show.cost)}</span></div>
+      <div class="detail-field"><label>Ages</label><span>${esc(show.ages)}</span></div>
+    </div>
+    ${show.notes ? `<div class="form-row"><label style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px">Notes</label><p style="font-size:13px;line-height:1.6">${esc(show.notes)}</p></div>` : ''}
+    <div style="margin-top:16px">
+      <div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Share Code — Copy & Send to Friends</div>
+      <div class="share-code-box">
+        <button class="copy-btn" onclick="copyCode('${code.replace(/'/g, "\\'")}')">Copy</button>
+        <span id="share-code-text" style="word-break:break-all">${code.slice(0, 80)}...</span>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('d-delete-btn').onclick = () => {
+    const updated = getShows().filter(s => s.id !== id);
+    saveShows(updated);
+    closeModal('detail-modal');
+    renderShows();
+    toast('Show removed');
+  };
+
+  document.getElementById('d-share-btn').onclick = () => copyCode(code);
+
+  openModal('detail-modal');
+}
+
+function copyCode(code) {
+  navigator.clipboard.writeText(code).then(() => toast('Code copied — send it!'));
+}
+
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function renderShows() {
+  let shows = getShows();
+  const search = document.getElementById('search-input').value.toLowerCase();
+  const genre = document.getElementById('genre-filter').value;
+  const city = document.getElementById('city-filter').value;
+  const sort = document.getElementById('sort-filter').value;
+  const today = new Date().toISOString().slice(0, 10);
+
+  // Update city filter
+  const cities = [...new Set(shows.map(s => s.city).filter(Boolean))].sort();
+  const cityEl = document.getElementById('city-filter');
+  const curCity = cityEl.value;
+  cityEl.innerHTML = '<option value="">All Cities</option>' + cities.map(c => `<option value="${c}"${c === curCity ? ' selected' : ''}>${c}</option>`).join('');
+
+  // Filter
+  shows = shows.filter(s => {
+    if (s.date < today) return false;
+    if (genre && s.genre !== genre) return false;
+    if (city && s.city !== city) return false;
+    if (search) {
+      const hay = (s.bands + s.venue + s.city + s.notes).toLowerCase();
+      if (!hay.includes(search)) return false;
+    }
+    return true;
+  });
+
+  // Sort
+  if (sort === 'date') shows.sort((a,b) => a.date.localeCompare(b.date));
+  else shows.sort((a,b) => b.addedAt - a.addedAt);
+
+  document.getElementById('show-count').textContent = shows.length + ' show' + (shows.length !== 1 ? 's' : '');
+
+  const grid = document.getElementById('show-grid');
+  if (shows.length === 0) {
+    grid.innerHTML = `<div class="empty-state"><p>No shows yet.</p><small>Post a show or import a code from your crew</small></div>`;
+    return;
+  }
+
+  grid.innerHTML = shows.map(show => {
+    const df = formatDate(show.date);
+    const bands = show.bands.split(/[\/\n]/).map(b => b.trim()).filter(Boolean);
+    const displayBands = bands.slice(0, 3).join(' / ') + (bands.length > 3 ? ` +${bands.length - 3}` : '');
+    return `
+      <div class="show-card" onclick="openDetail('${show.id}')">
+        <div class="show-card-stripe ${show.genre}"></div>
+        <div class="show-card-body">
+          <div class="show-date-row">
+            <div class="show-date">${esc(df.date)}</div>
+            <div class="show-day-time">
+              <span class="show-day">${esc(df.day)}</span>
+              <span class="show-time">${esc(show.time || '')}</span>
+            </div>
+          </div>
+          <div class="show-bands">${esc(displayBands)}</div>
+          <div class="show-venue">@ <span>${esc(show.venue)}</span></div>
+          <div class="show-tags">
+            <span class="tag ${show.genre}">${show.genre}</span>
+            <span class="tag diy">DIY</span>
+            ${show.ages !== 'All Ages' ? `<span class="tag">${esc(show.ages)}</span>` : '<span class="tag" style="background:var(--yellow);color:var(--ink)">All Ages</span>'}
+          </div>
+          <div class="show-meta">
+            <span class="show-cost">${esc(show.cost)}</span>
+            <span class="show-city">${esc(show.city)}</span>
+            <button class="show-share-btn" onclick="event.stopPropagation();shareQuick('${show.id}')">Share</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function shareQuick(id) {
+  const show = getShows().find(s => s.id === id);
+  if (!show) return;
+  const code = encodeShow(show);
+  navigator.clipboard.writeText(code).then(() => toast('Code copied — send it!'));
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => {
+    if (e.target === el) el.classList.remove('open');
+  });
+});
+
+// Keyboard ESC
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(el => el.classList.remove('open'));
+});
+
+// Check for ?import= query param (for deep linking via URL)
+function checkUrlImport() {
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get('import');
+  if (code) {
+    document.getElementById('import-code').value = decodeURIComponent(code);
+    openModal('import-modal');
+  }
+}
+
+// Seed with one example show so it doesn't look blank on first open
+function seedIfEmpty() {
+  if (getShows().length === 0) {
+    const example = {
+      id: 'example01',
+      bands: 'Inmates HxC / AXIOMA / Pill Time / DJ Billy Club',
+      date: new Date(Date.now() + 7 * 864e5).toISOString().slice(0,10),
+      time: '7:30pm doors / 8pm',
+      venue: 'The Grog Shop',
+      city: 'Cleveland, OH',
+      cost: '$15 / +3 DOS',
+      genre: 'punk',
+      ages: 'All Ages',
+      notes: 'Friday night in Cleveland',
+      addedAt: Date.now()
+    };
+    saveShows([example]);
+  }
+}
+
+seedIfEmpty();
+checkUrlImport();
+renderShows();
+</script>
+</body>
+</html>
