@@ -22,14 +22,14 @@ Mesh is a punk show board that lives in a single HTML file. No app store. No acc
 
 Built for DIY punk / hardcore / metal / noise scenes.
 
-Open `diy-showboard.html` in any web browser and you're running it. Everything saves locally on your machine.
+Open `diy-mesh-showboard.html` in any web browser and you're running it. Everything saves locally on your machine.
 
 ---
 
 ## 1. Getting Started
 
 **Step 1 — Get the file**
-Someone sent you `diy-showboard.html` — via email, USB, Signal, Discord, whatever. Save it somewhere on your computer you'll remember.
+Someone sent you `diy-mesh-showboard.html` — via email, USB, Signal, Discord, whatever. Save it somewhere on your computer you'll remember.
 
 **Step 2 — Open it in your browser**
 Double-click the file, or drag it into any web browser (Chrome, Firefox, Safari, Edge — all work). The MESH show board loads up. No internet connection required once you have the file.
