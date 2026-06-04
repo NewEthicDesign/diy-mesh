@@ -18,7 +18,7 @@ Pass this around like a zine.
 
 ## What Is This
 
-Mesh is a punk show board that lives in a single HTML file. No app store. No account. No algorithm. No Ticketmaster. Just you, your browser, and your crew.
+Mesh is a punk show board that lives in a single HTML file. No app store. No account. No algorithm. No Ticketmaster. Just you, your browser, and your people.
 
 Built for DIY punk / hardcore / metal / noise scenes.
 
@@ -93,7 +93,7 @@ Text message, Signal, email, Discord, paste it in a note. Any channel works — 
 ### To Import a Show (someone sent you a code)
 
 **Step 1 — Open MESH in your browser**
-Double-click `diy-showboard.html` like normal.
+Double-click `diy-mesh-showboard.html` like normal.
 
 **Step 2 — Click "Import Code" in the top right**
 A text box opens.
@@ -103,7 +103,7 @@ The show appears on your board instantly. If you already have that show, it'll l
 
 ---
 
-> **The network effect:** If you're plugged into scenes in multiple cities, you're the bridge. Import shows from your Cleveland friend, share them to your Detroit crew, import their Detroit shows, share those to Pittsburgh. That's the mesh. No algorithm. Just people passing information to people.
+> **The network effect:** If you're plugged into scenes in multiple cities, you're the bridge. Import shows from your Cleveland friend, share them to your Detroit people, import their Detroit shows, share those to Pittsburgh. That's the mesh. No algorithm. Just people passing information to people.
 
 ---
 
@@ -112,15 +112,15 @@ The show appears on your board instantly. If you already have that show, it'll l
 If someone in your city doesn't have the file yet, they can't receive show codes. Get them set up first.
 
 **Step 1 — Send them both files**
-Email `diy-showboard.html` and `MESH-readme.md` (this file) to your friend. Any email handles these as attachments. Signal, Discord, Google Drive, and USB all work too.
+Email `diy-mesh-showboard.html` and `MESH-readme.md` (this file) to your friend. Any email handles these as attachments. Signal, Discord, Google Drive, and USB all work too.
 
 **Step 2 — Tell them to save and open**
 They save `diy-showboard.html` to their computer and double-click it. That's all. They're set up.
 
 **Step 3 — Send them a show code**
-Generate a Share Code for any show and send it to them right away so they have something on their board immediately. First code = first connection = the mesh grows.
+Generate a Share Code for any show and send it to them right away so they have something on their board immediately. First code = first connection = the mesh grows. 
 
-> Think of it like a zine. A zine doesn't have a server. You print it, hand it to someone, they hand it to someone else. The file IS the publication. The codes ARE the content.
+> Think of it like a zine. A zine or show flyer doesn't have a server. You print it, hand it to someone, they hand it to someone else. The file IS the publication. The codes ARE the content.
 
 ---
 
@@ -178,7 +178,7 @@ MESH is just that, but digital.
 - No algorithm deciding what shows you see
 - No account required to participate
 
-The file is yours. Modify it. Redistribute it. Print this and tape it to a telephone pole. Do whatever you want with it. That's the point.
+The file is yours. Modify it. Redistribute it. Print this and tape it to a telephone pole. Do whatever you want with it. That's the point. 
 
 **Keep it weird. Keep it local. Keep it loud.**
 
