@@ -12,7 +12,7 @@ Open either file in your browser to view the full styled experience.
 ### User Guide + README
 
 **No Ads. No Server. No Corporate Involvement.**
-Pass this around like a zine.
+Pass this around like a zine. https://newethicdesign.github.io/diy-mesh/diy-mesh-showboard.html
 
 ---
 
